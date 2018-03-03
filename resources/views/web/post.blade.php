@@ -3,22 +3,31 @@
 
 <div class="container">
 	<div class="col-md-8 col-md-offset-2">
-		<h1>Lista de Articulos</h1>
-			@foreach($posts as $post)
+		<h1>{{$post->name}}</h1>
+			
 			  <div class="panel panel-dafault">
                  <div class="panel-heading">
-				   {{ $post->name}}
+				   <h1>Categoria</h1>
+				 <a href="#">{{$post->category->name}}</a>
 				 </div>
+
 				 <div class="panel-body">
+
 					@if($post->file)
 						<img src="{{$post->file}}" alt="img-responsive">
 					@endif
 					{{$post->excerpt}}
-				 <a href="{{route('post',$post->slug)}}" class="pull-right">Leer mas</a>
-				 </div>
+					<hr>
+					{!! $post->body!!}
+					<hr>
+					<h1>Etiquetas</h1>
+					@foreach($post->tags as $tag)
+				 <a href="#">{{ $tag->name}}</a>
+					@endforeach
+				
+				</div>
 			  </div>
-			@endforeach
-			{{$posts->render()}}
+				
 	</div>
 </div>
 @endsection

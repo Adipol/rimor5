@@ -3,18 +3,28 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\PostStoreRequest;
+use App\Http\Requests\PostUpdateRequest;
+
 use App\Http\Controllers\Controller;
+use App\Post;
+
 
 class PostController extends Controller
 {
-    /**
+	public function __construct(){
+		$this->middleware('auth');
+	}
+	/**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        //
+		$posts =Post::orderBy('id','DESC')->paginate();
+		
+		return view('admin.posts.index', compact('posts'));
     }
 
     /**
@@ -24,7 +34,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+		return view('admin.posts.create');
     }
 
     /**
@@ -33,10 +43,14 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(PostStoreRequest $request)
     {
-        //
-    }
+		//siempre se valida en esta seccion
+		$post=Post::create($request->all());
+
+		return redirect()->route('posts.edit',$post->id)
+		->with ('info','Entrada creada con exito');
+	}
 
     /**
      * Display the specified resource.
@@ -46,7 +60,8 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        //
+		$post=Post::find($id);
+		return view('admin.posts.show',compact('post'));
     }
 
     /**
@@ -57,7 +72,8 @@ class PostController extends Controller
      */
     public function edit($id)
     {
-        //
+		$post=Post::find($id);
+		return view('admin.posts.edit',compact('post'));
     }
 
     /**
@@ -67,9 +83,13 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(PostUpdateRequest $request, $id)
     {
-        //
+		//siempre se valida en esta seccion
+		$post=Post::find($id);
+		$post->fill($request->all())->save();
+		return redirect()->route('posts.edit',$post->id)
+		->with ('info','Entrada actualizada con exito');
     }
 
     /**
@@ -80,6 +100,7 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        //
+		$post=Post::find($id)->delete();
+		return back()->with('info','Eliminado correctamente');
     }
 }
